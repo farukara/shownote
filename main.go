@@ -47,9 +47,10 @@ func open_tasknote (taskno string) {
     _,err = os.Stat(arg0)
     if errors.Is(err, fs.ErrNotExist) {
         log.Err(err).Stack().Msg("Note for this task does not exist.")
-        fmt.Println("\n1. Add one (creates a new note for this task and annotates the task with \"Notes\")")
-        fmt.Println("2. Cancel")
-        fmt.Println("Choose (1/2): ")
+        fmt.Println("\n\033[7;31m==>\033[27m\033[0m Note for this task \033[1;31mdoes not\033[0m exist.")
+        fmt.Println("\n1. \033[7;36mAdd one\033[0m (creates a new note for this task and annotates the task with \"Notes\")")
+        fmt.Println("2. \033[7;36mCancel\033[0m")
+        fmt.Print("\nChoose (1/2): ")
         s := bufio.NewScanner(os.Stdin)
         var answer string
         if s.Scan() {
@@ -58,10 +59,12 @@ func open_tasknote (taskno string) {
         switch answer {
             //FIX:
             case "1": 
-                
+                add_tasknote(taskno)
             case "2": 
+            fmt.Println("Cancelled!")
                 os.Exit(0)
             default: 
+                fmt.Println("\n\033[7;31m==>\033[27m\033[0m invalid input:", answer)
                 os.Exit(1)
         }
         return
@@ -73,31 +76,30 @@ func open_tasknote (taskno string) {
     err = cmd.Run()
     if err != nil {
         log.Err(err).Stack().Str("cmd", app + " " +arg0).Msg("error running command")
+    } else {
+        log.Info().Str("cmd", app + " " +arg0).Msg("note openned")
     }
 }
 
-func add_tasknote(taskno, method string) {
+func add_tasknote(taskno string) {
     log.Debug().Str("taskno", taskno)
-    log.Debug().Str("method", method)
     task_uuid, err := get_task_uuid(taskno)
     if err != nil {
         err := errors.New("failure to get uuid")
         log.Err(err).Stack().Str("task no", taskno).Msg( "error getting task UUID from Task Warrior" )
     }
-    if method != "add" {
-        err := errors.New("unsopported method")
-        log.Err(err).Stack().Str("unsported method", method)
-    }
+
     homename, err := os.UserHomeDir()
     if err != nil {
         log.Err(err).Stack().Msg("failure to get user home directory")
     }
     log.Info().Str("task uuid:", string(task_uuid))
-    // filename := homename + "/.tasknotes/" + strings.TrimSpace(string(task_uuid)) + ".md"
-    filename := homename + "/Documents/golang/tasknotes/" + strings.TrimSpace(string(task_uuid)) + ".md"
+    filename := homename + "/.tasknotes/" + strings.TrimSpace(string(task_uuid)) + ".md"
+    // filename := homename + "/Documents/golang/tasknotes/" + strings.TrimSpace(string(task_uuid)) + ".md"
     filePath, _ := filepath.Abs(filename)
     os.Create(filePath)
     log.Info().Str("file_name", filename).Msg("file created")
+    fmt.Println("\n\033[7;32m==>\033[27m\033[0m a note added to task", taskno)
     open_tasknote(taskno)
 }
 
@@ -115,7 +117,10 @@ func main() {
 
         case 3:
             method, taskno := args[1], args[2]
-            add_tasknote(taskno, method)
+            switch method {
+                case "add" , "ADD" , "a" , "A":
+                    add_tasknote(taskno)
+            }
         default:
             err := errors.New("No support for other than 2 or 3 arguments ")
             fmt.Println("usage:\nopen note for task 12: main 12\nadd note to task 12: main add 12")
