@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/rs/zerolog"
@@ -116,39 +117,68 @@ func main() {
         Notes_folder                    string      `yaml:"notes_folder"`
         Open_tasknote_after_creation    int         `yaml:"open_tasknote_after_creation"`
     }
-    config_file,err := os.Open("config.yaml")
-    if err != nil {
-        log.Err(err).Stack().Msg("error opening config file")
-    }
-    defer config_file.Close()
-    b_config, err := io.ReadAll(config_file)
-    if err != nil {
-        log.Err(err).Stack().Msg("error reading bytes from config file")
-    }
-    var c_config Config // current config
-    err = yaml.Unmarshal(b_config, &c_config)
-    if err != nil {
-        log.Err(err).Stack().Msg("error unmarshalling config file")
-    }
 
-    var (
-        FILE_EXT = c_config.File_ext
-        NOTES_FOLDER  = c_config.Notes_folder
-        // OPEN_TASKNOOTE_AFTER_CREATION = c_config.Open_tasknote_after_creation
-    )
+    c_config := Config {
+        File_ext: ".md",
+        Editor: "vim",
+        Notes_folder: ".tasknotes",
+        Open_tasknote_after_creation: 1,
+    }// current config
+
+    // NOTE: add home folder option for config file
+    // NOTE: add backup for no file cases
+    // NOTE: move to its own function
+    homename, err := os.UserHomeDir()
+    if err != nil {
+        log.Err(err).Stack().Msg("failure to get user home directory")
+    }
+    configpath := ""
+    configpath1 := filepath.Join(homename, ".config/shownote/config.yaml")
+    configpath2 := filepath.Join(homename, ".shownote/config.yaml")
+    _,err1 := os.Stat(configpath1)
+    _,err2 := os.Stat(configpath2)
+    if errors.Is(err2, fs.ErrNotExist) {
+        log.Info().Msg("config.yaml is not at $HOME/.shownote folder")
+    } else {
+        configpath = configpath2
+    }
+    if errors.Is(err1, fs.ErrNotExist) {
+        log.Info().Msg("config.yaml is not at $HOME/.config/.shownote folder")
+    } else {
+        configpath = configpath1
+    }
+    
+    log.Debug().Str("len of configpath", strconv.Itoa(len(configpath)))
+    if len(configpath) != 0 {
+        config_file,err := os.Open(configpath)
+        defer config_file.Close()
+        b_config, err := io.ReadAll(config_file)
+        if err != nil {
+            log.Err(err).Stack().Msg("error reading bytes from config file")
+        }
+        err = yaml.Unmarshal(b_config, &c_config)
+        if err != nil {
+            log.Err(err).Stack().Msg("error unmarshalling config file")
+        }
+    }
 
     args := os.Args
 
     switch len(os.Args) {
         case 2:
-            taskno := args[1]
-            open_tasknote(taskno, NOTES_FOLDER, FILE_EXT )
+            switch args[1] {
+                case "tidy", "t":
+                    // NOTE: implement
+                default:
+                    taskno := args[1]
+                    open_tasknote(taskno, c_config.File_ext, c_config.Notes_folder )
+            }
 
         case 3:
             method, taskno := args[1], args[2]
             switch method {
                 case "add" , "ADD" , "a" , "A":
-                    add_tasknote(taskno, NOTES_FOLDER, FILE_EXT)
+                    add_tasknote(taskno, c_config.File_ext, c_config.Notes_folder)
             }
         default:
             err := errors.New("No support for other than 2 or 3 arguments ")
@@ -157,4 +187,3 @@ func main() {
             
     }
 }
-

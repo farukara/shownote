@@ -5,21 +5,30 @@
 
 Taskwarrior provides an annotation feature where you can write small notes. However it's not suitable for heavy note-taking. Enter "shownote". With show note you can add view delete a notes pertaining to a task on a totally different text file. Each task will have its own note file. 
 
-## Advantages
+## Installation
+### Build from source you need [Go](https://go.dev/).
+- download this repo by:
 
-*Data is yours*. You can use it however you want. If you want you can build a cloud solution, which will enable syncing.
-*It's decoupled from Taskwarrior*. Notes are kept another folder and do not interfere with Taskwarrior at all.
-*Extensible*. You can extend the functionality to suit your needs, such as spaced repetition.
+    $ git clone https://github.com/farukara/shownote
+    cd show note
+    make
 
-## Improvements Needed
+make runs go build and copies the executable binary "sn" to usr/local/bin
 
-- Only testted and used in Mac OS. It needs to be tested and used in other platforms.
-## Concepts
+### Directly download executable (to be implemented)
+- download the file from release page 
+- save file somewhere in the $PATH
+- you can see folders that are on the $PATH by:
+
+    printenv $PATH
+
+on the console.
+
 ## Commands
 
 - add or a
 - delete or del or d (not implemented yet)
-- orphan or o (not implemented yet)
+- tidy or t (not implemented yet)
 
 ## Usage
     sn 12
@@ -38,6 +47,28 @@ if you try to open a non-existent note. it will give options or  adding one and 
     alias shownote sn
 for shownote. 
 
+## Configuration
+**shownote** will look for a config.yaml file at two places: `$HOME/.config/shownote/config.yaml` or `$HOME/.shownote/config.yaml`. If there is no config file, then it uses the following defaults: 
+
+    file_ext: ".md" #dont forget initial dot 
+    editor: "vim" #empty for default system $EDITOR
+    notes_folder: ".tasknotes"  #relative to user home folder
+    open_tasknote_after_creation: 1
+
+You can find a sample config file in config.yaml file above. All options have to be present in the file for it to work. Basically, only change the right side of the colon in the config file.
+
+## Advantages
+
+*Data is yours*. You can use it however you want. If you want you can build a cloud solution, which will enable syncing.
+*It's decoupled from Taskwarrior*. Notes are kept another folder and do not interfere with Taskwarrior at all.
+*Extensible*. You can extend the functionality to suit your needs, such as spaced repetition.
+
+## Improvements Needed
+
+- Only testted and used in macOS. It should run alright in Linux. For other platforms it's not been used nor tested extensively.
+
+## Concepts
+
 ## TODOs
 
 - add delete
@@ -48,3 +79,4 @@ for shownote.
 - main 12 is opening the notes file even if it's not created before. gotta check either there is Notes annotation or if the file exist
 - for recursive tasks notes annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
 - set config.yaml with if else clauses to use different folders for dev and prod
+- add options for log levels with nolog as well.

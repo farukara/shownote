@@ -5,3 +5,4 @@ notes_folder: ".tasknotes"  #relative to user home folder
 # notes_folder: "Documents/golang/tasknotes/"
 
 open_tasknote_after_creation: 1
+configfile_folder: ".config/shownote"
