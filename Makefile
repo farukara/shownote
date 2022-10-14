@@ -1,24 +1,7 @@
-PHONY: release clean install
-dist/dstask: clean
-	go build -mod=vendor -o gotask main.go
+#!/bin/env bash
 
-release:
-	./do-release.sh
+all: sn
 
-clean:
-	rm -rf dist
-
-install:
-	cp dist/dstask /usr/local/bin
-	cp dist/dstask-import /usr/local/bin
-
-test:
-	go test -v -mod=vendor ./...
-	./integrationtest.sh | cat  # cat -- no tty, no confirmations
-lint:
-	"qa/lint.sh"
-
-update_deps:
-	go get
-	go mod vendor
-	git add -f vendor
+sn: main.go
+	go build -o sn main.go
+	cp sn /usr/local/bin/

@@ -29,3 +29,4 @@ for show task.
 - make path use path from std library to be compatible
 - main 12 is opening the notes file even if it's not created before. gotta check either there is Notes annotation or if the file exist
 - for recursive tasks notes annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
+- set config.yaml with if else clauses to use different folders for dev and prod

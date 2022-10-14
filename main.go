@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"gopkg.in/yaml.v3"
 )
 
 func get_task_uuid(taskno string) ([]byte, error){
@@ -28,7 +30,7 @@ func get_task_uuid(taskno string) ([]byte, error){
     return task_uuid, err
 }
 
-func open_tasknote (taskno string) {
+func open_tasknote (taskno, notes_folder, file_ext string) {
     task_uuid, err := get_task_uuid(taskno)
     if err != nil {
         err := errors.New("failure to get uuid")
@@ -41,9 +43,10 @@ func open_tasknote (taskno string) {
     if err != nil {
         log.Err(err).Stack().Msg("failure to get user home directory")
     }
-    arg0 := homename + "/.tasknotes/" + strings.TrimSpace(string(task_uuid)) + ".md"
+    arg0 := filepath.Join(homename, notes_folder,  strings.TrimSpace(string(task_uuid)) + file_ext)
 
-    //check if file exists
+
+    // if file does not exist
     _,err = os.Stat(arg0)
     if errors.Is(err, fs.ErrNotExist) {
         log.Err(err).Stack().Msg("Note for this task does not exist.")
@@ -59,7 +62,7 @@ func open_tasknote (taskno string) {
         switch answer {
             //FIX:
             case "1": 
-                add_tasknote(taskno)
+                add_tasknote(taskno, notes_folder, file_ext)
             case "2": 
             fmt.Println("Cancelled!")
                 os.Exit(0)
@@ -81,7 +84,7 @@ func open_tasknote (taskno string) {
     }
 }
 
-func add_tasknote(taskno string) {
+func add_tasknote(taskno, notes_folder, file_ext string) {
     log.Debug().Str("taskno", taskno)
     task_uuid, err := get_task_uuid(taskno)
     if err != nil {
@@ -94,32 +97,58 @@ func add_tasknote(taskno string) {
         log.Err(err).Stack().Msg("failure to get user home directory")
     }
     log.Info().Str("task uuid:", string(task_uuid))
-    filename := homename + "/.tasknotes/" + strings.TrimSpace(string(task_uuid)) + ".md"
-    // filename := homename + "/Documents/golang/tasknotes/" + strings.TrimSpace(string(task_uuid)) + ".md"
-    filePath, _ := filepath.Abs(filename)
-    os.Create(filePath)
-    log.Info().Str("file_name", filename).Msg("file created")
+    note_path := filepath.Join(homename, notes_folder,  strings.TrimSpace(string(task_uuid)) + file_ext)
+    os.Create(note_path)
+    log.Info().Str("file_name", filepath.Base(note_path) ).Msg("file created")
     fmt.Println("\n\033[7;32m==>\033[27m\033[0m a note added to task", taskno)
-    open_tasknote(taskno)
+    open_tasknote(taskno, notes_folder, file_ext)
 }
 
 func init() {
     zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+
 }
 
 func main() {
+    type Config struct {
+        File_ext                        string      `yaml:"file_ext"`
+        Editor                          string      `yaml:"editor"`
+        Notes_folder                    string      `yaml:"notes_folder"`
+        Open_tasknote_after_creation    int         `yaml:"open_tasknote_after_creation"`
+    }
+    config_file,err := os.Open("config.yaml")
+    if err != nil {
+        log.Err(err).Stack().Msg("error opening config file")
+    }
+    defer config_file.Close()
+    b_config, err := io.ReadAll(config_file)
+    if err != nil {
+        log.Err(err).Stack().Msg("error reading bytes from config file")
+    }
+    var c_config Config // current config
+    err = yaml.Unmarshal(b_config, &c_config)
+    if err != nil {
+        log.Err(err).Stack().Msg("error unmarshalling config file")
+    }
+
+    var (
+        FILE_EXT = c_config.File_ext
+        NOTES_FOLDER  = c_config.Notes_folder
+        // OPEN_TASKNOOTE_AFTER_CREATION = c_config.Open_tasknote_after_creation
+    )
+
     args := os.Args
 
     switch len(os.Args) {
         case 2:
             taskno := args[1]
-            open_tasknote(taskno)
+            open_tasknote(taskno, NOTES_FOLDER, FILE_EXT )
 
         case 3:
             method, taskno := args[1], args[2]
             switch method {
                 case "add" , "ADD" , "a" , "A":
-                    add_tasknote(taskno)
+                    add_tasknote(taskno, NOTES_FOLDER, FILE_EXT)
             }
         default:
             err := errors.New("No support for other than 2 or 3 arguments ")
