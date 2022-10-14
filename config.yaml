@@ -1,7 +1,7 @@
-# leave empty for markdown otherwise
-file_ext: ".md"
-# leave empty for default $EDITOR in environmental variables
-editor: ""
+file_ext: ".md" #dont forget initial dot 
+editor: "" #empty for default system $EDITOR
+
 notes_folder: ".tasknotes"  #relative to user home folder
 # notes_folder: "Documents/golang/tasknotes/"
+
 open_tasknote_after_creation: 1
