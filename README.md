@@ -80,3 +80,5 @@ You can find a sample config file in config.yaml file above. All options have to
 - for recursive tasks notes annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
 - set config.yaml with if else clauses to use different folders for dev and prod
 - add options for log levels with nolog as well.
+- separate functions to their own files, and move all code to src folder. only main.go remains at the top level
+- adding new note when it does not exist annotates the main task with "notes:Notes", think about putting option for that into config

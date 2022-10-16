@@ -44,7 +44,8 @@ func open_tasknote (taskno, notes_folder, file_ext string) {
     if err != nil {
         log.Err(err).Stack().Msg("failure to get user home directory")
     }
-    arg0 := filepath.Join(homename, notes_folder,  strings.TrimSpace(string(task_uuid)) + file_ext)
+    file_name := strings.TrimSpace(string(task_uuid)) + file_ext
+    arg0 := filepath.Join(homename, notes_folder,  file_name)
 
 
     // if file does not exist
@@ -81,7 +82,7 @@ func open_tasknote (taskno, notes_folder, file_ext string) {
     if err != nil {
         log.Err(err).Stack().Str("cmd", app + " " +arg0).Msg("error running command")
     } else {
-        log.Info().Str("cmd", app + " " +arg0).Msg("note openned")
+        log.Info().Str("cmd", app + " " +arg0).Msg("note opened")
     }
 }
 
@@ -111,18 +112,18 @@ func init() {
 }
 
 func main() {
-    type Config struct {
-        File_ext                        string      `yaml:"file_ext"`
-        Editor                          string      `yaml:"editor"`
-        Notes_folder                    string      `yaml:"notes_folder"`
-        Open_tasknote_after_creation    int         `yaml:"open_tasknote_after_creation"`
+    type config struct {
+        file_ext                        string      `yaml:"file_ext"`
+        editor                          string      `yaml:"editor"`
+        notes_folder                    string      `yaml:"notes_folder"`
+        open_tasknote_after_creation    int         `yaml:"open_tasknote_after_creation"`
     }
 
-    c_config := Config {
-        File_ext: ".md",
-        Editor: "vim",
-        Notes_folder: ".tasknotes",
-        Open_tasknote_after_creation: 1,
+    c_config := config {
+        file_ext: ".md",
+        editor: "vim",
+        notes_folder: ".tasknotes",
+        open_tasknote_after_creation: 1,
     }// current config
 
     // NOTE: add home folder option for config file
@@ -171,14 +172,14 @@ func main() {
                     // NOTE: implement
                 default:
                     taskno := args[1]
-                    open_tasknote(taskno, c_config.File_ext, c_config.Notes_folder )
+                    open_tasknote(taskno, c_config.notes_folder, c_config.file_ext)
             }
 
         case 3:
             method, taskno := args[1], args[2]
             switch method {
                 case "add" , "ADD" , "a" , "A":
-                    add_tasknote(taskno, c_config.File_ext, c_config.Notes_folder)
+                    add_tasknote(taskno, c_config.notes_folder, c_config.file_ext)
             }
         default:
             err := errors.New("No support for other than 2 or 3 arguments ")

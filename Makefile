@@ -1,7 +1,9 @@
-#!/bin/env bash
-
+.PHONY: all
 all: sn
 
 sn: main.go
-	go build -o sn main.go
-	cp sn /usr/local/bin/
+	go build -o $@ $<
+	cp $@ /usr/local/bin/
+	mkdir -pv ~/.config/shownote
+	cp ./config.yaml ~/.config/shownote/
+	rm sn
