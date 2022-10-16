@@ -42,22 +42,23 @@ func main() {
     if err != nil {
         log.Err(err).Stack().Msg("failure to get user home directory")
     }
+    is_config_exist := false
     configpath := ""
     configpath1 := filepath.Join(homename, ".config/shownote/config.yaml")
     configpath2 := filepath.Join(homename, ".shownote/config.yaml")
     _,err1 := os.Stat(configpath1)
     _,err2 := os.Stat(configpath2)
-    if errors.Is(err2, fs.ErrNotExist) {
-        log.Info().Msg("config.yaml is not at $HOME/.shownote folder")
-    } else {
+    if !errors.Is(err2, fs.ErrNotExist) {
         configpath = configpath2
+        is_config_exist = true
     }
-    if errors.Is(err1, fs.ErrNotExist) {
-        log.Info().Msg("config.yaml is not at $HOME/.config/.shownote folder")
-    } else {
+    if !errors.Is(err1, fs.ErrNotExist) {
         configpath = configpath1
+        is_config_exist = true
     }
-    
+    if !is_config_exist {
+        log.Info().Msg("config.yaml is not at one of these 2 locations: $HOME/.config/.shownote $HOME/.shownote")
+    }
     log.Debug().Str("len of configpath", strconv.Itoa(len(configpath)))
     if len(configpath) != 0 {
         config_file,err := os.Open(configpath)
@@ -78,6 +79,7 @@ func main() {
         case 2:
             switch args[1] {
                 case "tidy", "t":
+                    u.Tidy(c_config.notes_folder, c_config.file_ext)
                     // NOTE: implement
                 default:
                     taskno := args[1]
