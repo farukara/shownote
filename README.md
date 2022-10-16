@@ -15,7 +15,7 @@ Taskwarrior provides an annotation feature where you can write small notes. Howe
 
 make runs go build and copies the executable binary "sn" to usr/local/bin
 
-### Directly download executable (to be implemented)
+### Directly download executable (not available yet)
 - download the file from release page 
 - save file somewhere in the $PATH
 - you can see folders that are on the $PATH by:
@@ -41,13 +41,9 @@ adds a note for task 16. if file exist with same uuid, it just opens it
 if you try to open a non-existent note. it will give options or  adding one and cancelling.
 
 ## Tips
-
-- you can add following line to your bash/zsh rc file to make calling the gotask with less keys strokes: 
-
-    alias shownote sn
-for shownote. 
-
 ## Configuration
+when you make from the source, the default config file will be copied to `$HOME/.config/shownote` folder. It's important that you don't change the left side of each option.
+
 **shownote** will look for a config.yaml file at two places: `$HOME/.config/shownote/config.yaml` or `$HOME/.shownote/config.yaml`. If there is no config file, then it uses the following defaults: 
 
     file_ext: ".md" #dont forget initial dot 
@@ -55,7 +51,7 @@ for shownote.
     notes_folder: ".tasknotes"  #relative to user home folder
     open_tasknote_after_creation: 1
 
-You can find a sample config file in config.yaml file above. All options have to be present in the file for it to work. Basically, only change the right side of the colon in the config file.
+You can find a sample config file in config.yaml file above. All options have to be present in the file for it to work. Again, basically, only change the right side of the colon in the config file.
 
 ## Advantages
 
@@ -75,10 +71,9 @@ You can find a sample config file in config.yaml file above. All options have to
 - add method to list orphan notes
 - add a logger lib
 - add a testing lib
-- make path use path from std library to be compatible
-- main 12 is opening the notes file even if it's not created before. gotta check either there is Notes annotation or if the file exist
+- main 12 is opening the notes file even if it's not created before. gotta check either there is "Notes" annotation or if the file exist
 - for recursive tasks notes annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
 - set config.yaml with if else clauses to use different folders for dev and prod
 - add options for log levels with nolog as well.
-- separate functions to their own files, and move all code to src folder. only main.go remains at the top level
 - adding new note when it does not exist annotates the main task with "notes:Notes", think about putting option for that into config
+- loggin should only log file name and immediate parent

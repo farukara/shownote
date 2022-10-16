@@ -1,4 +1,4 @@
-module github.com/farukara/gonotes
+module github.com/farukara/shownote
 
 go 1.19
 

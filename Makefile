@@ -2,7 +2,7 @@
 all: sn
 
 sn: main.go
-	go build -o $@ $<
+	go build -o $@ $^
 	cp $@ /usr/local/bin/
 	mkdir -pv ~/.config/shownote
 	cp ./config.yaml ~/.config/shownote/
