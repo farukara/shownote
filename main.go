@@ -16,24 +16,25 @@ import (
 	u "github.com/farukara/shownote/utils"
 )
 
+type config struct {
+    file_ext                        string      `yaml:"file_ext"`
+    editor                          string      `yaml:"editor"`
+    notes_folder                    string      `yaml:"notes_folder"`
+    open_tasknote_after_creation    int         `yaml:"open_tasknote_after_creation"`
+}
+
 func init() {
     zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 }
 
 func main() {
-    type config struct {
-        file_ext                        string      `yaml:"file_ext"`
-        editor                          string      `yaml:"editor"`
-        notes_folder                    string      `yaml:"notes_folder"`
-        open_tasknote_after_creation    int         `yaml:"open_tasknote_after_creation"`
-    }
-
+    // current config
     c_config := config {
         file_ext: ".md",
         editor: "vim",
         notes_folder: ".tasknotes",
         open_tasknote_after_creation: 1,
-    }// current config
+    }
 
     // NOTE: add home folder option for config file
     // NOTE: add backup for no file cases
@@ -76,17 +77,16 @@ func main() {
     args := os.Args
 
     switch len(os.Args) {
-        case 2:
+        case 2: // eg. sn tidy
             switch args[1] {
                 case "tidy", "t":
                     u.Tidy(c_config.notes_folder, c_config.file_ext)
-                    // NOTE: implement
                 default:
                     taskno := args[1]
                     u.Open_tasknote(taskno, c_config.notes_folder, c_config.file_ext)
             }
 
-        case 3:
+        case 3: // eg. sn 122 add
             method, taskno := args[1], args[2]
             switch method {
                 case "add" , "ADD" , "a" , "A":

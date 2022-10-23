@@ -6,9 +6,15 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"sync"
 
 	"github.com/rs/zerolog/log"
 )
+
+type filecmd struct {
+    cmd *exec.Cmd
+    filename string
+}
 
 // find orphan notes that does not have a corresponding task
 // in taskwarrior
@@ -26,24 +32,54 @@ func Tidy(notes_folder, file_ext string) {
         fmt.Println("could not glob the notes folder:", err )
     }
 
-    for _, file := range files {
-        //if its not a task file
-        if len(file) != 39 {
-            continue
-        }
 
-        // look if task exist for that note
-                
-        app := "task"
-        arg0 := "_get"
-        arg1 := file[:8] + ".id"
+    ch := make(chan filecmd, 1000)
+    wgout := &sync.WaitGroup{}
+    wgout.Add(2)
+    go func (ch chan filecmd) {
+        defer wgout.Done()
+        for _, file := range files {
+            //if its not a uuid named task file
+            if len(file) != 39 {
+                continue
+            }
 
-        cmd := exec.Command(app, arg0, arg1)
-        id, err := cmd.Output()
-        /* fmt.Println(len(string(id)))
-        fmt.Println(len(id)) */
-        if err == nil && len(id) < 2 {
-            fmt.Println(path.Join(notes_folder, file))
+            // look if task exist for that note
+            app := "task"
+            arg0 := "_get"
+            arg1 := file[:8] + ".id"
+
+            cmd := exec.Command(app, arg0, arg1)
+            filecmd := filecmd{
+                cmd: cmd,
+                filename: file,
+            }
+            ch <- filecmd
+
         }
-    } 
+        close(ch)
+    }(ch)
+
+    go func (ch chan filecmd) {
+        defer wgout.Done()
+        wg := &sync.WaitGroup{}
+        wg.Add(4)
+        for i:=0; i<4; i++ {
+            go func (ch chan filecmd) {
+                defer wg.Done()
+                for {
+                    filecmd, ok := <- ch
+                    if !ok {
+                        break
+                    }
+                    id, err := filecmd.cmd.Output()
+                    if err == nil && len(id) < 2 {
+                        fmt.Println(path.Join(notes_folder, filecmd.filename))
+                    }
+                }
+            }(ch)
+        }
+        wg.Wait()
+    }(ch)
+    wgout.Wait()
 }

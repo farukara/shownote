@@ -35,19 +35,19 @@ on the console.
 opens note for task number 12
 
     sn add 16 
-adds a note for task 16. if file exist with same uuid, it just opens it
+adds a note for the task 16. if file exist with same uuid, it just opens it.
 
     sn 13
-if you try to open a non-existent note. it will give options or  adding one and cancelling.
+if you try to open a non-existent note. it will give options for adding one or cancelling.
 
     sn tidy
-prints out the notes that don't have a corresponding task. This happens when a task is deleted but associatted task note is not. tidy command only looks at files with proper uuid names. so if there are other files in the same folder you have to clean them manually. 
+prints out the notes that don't have a corresponding task. This happens when a task is deleted but associatted task note is not. tidy command only looks at the files with proper uuid names. so if there are other files in the same folder you have to clean them up manually. 
 
 if there are no orphan notes "tidy" returns nothing.
 
-"tidy" runs slow because of API calls to taskwarrior.
+"tidy" runs slow because of extensive API calls to taskwarrior (about 10s for 1,000 notes).
 
-"tidy" only prints the orphan file names. if you want to delete them you can pipe them into rm with the following command:
+"tidy" only prints the orphan file names. if you want to delete them, you can pipe them into rm with the following command:
 
     sn tidy | xargs rm
 
@@ -79,7 +79,6 @@ You can find a sample config file in config.yaml file above. All options have to
 ## TODOs
 
 - add delete
-- add method to list orphan notes
 - add a testing lib
 - main 12 is opening the notes file even if it's not created before. gotta check either there is "Notes" annotation or if the file exist
 - for recursive tasks notes annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
@@ -88,3 +87,4 @@ You can find a sample config file in config.yaml file above. All options have to
 - adding new note when it does not exist annotates the main task with "notes:Notes", think about putting option for that into config
 - loggin should only log file name and immediate parent
 - tidy should list file names in blue and content below it
+- handle calls to tasks that don't have a due date. 
