@@ -88,3 +88,4 @@ You can find a sample config file in config.yaml file above. All options have to
 - loggin should only log file name and immediate parent
 - tidy should list file names in blue and content below it
 - handle calls to tasks that don't have a due date. 
+- add image from gh

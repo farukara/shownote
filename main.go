@@ -94,7 +94,8 @@ func main() {
             }
         default:
             err := errors.New("No support for other than 2 or 3 arguments ")
-            fmt.Println("usage:\nopen note for task 12: main 12\nadd note to task 12: main add 12")
+            fmt.Println("\nusage:\n\topen note for task 12: \n\t\tmain 12\n\tadd note to task 12: \n\t\tmain add 12")
+            fmt.Println()
             log.Error().Stack().Err(err).Msg("No support for other than 2 or 3 arguments ")
             
     }
