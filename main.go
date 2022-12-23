@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	"github.com/rs/zerolog"
@@ -63,7 +64,6 @@ func main() {
     log.Debug().Str("len of configpath", strconv.Itoa(len(configpath)))
     if len(configpath) != 0 {
         config_file,err := os.Open(configpath)
-        defer config_file.Close()
         b_config, err := io.ReadAll(config_file)
         if err != nil {
             log.Err(err).Stack().Msg("error reading bytes from config file")
@@ -72,6 +72,7 @@ func main() {
         if err != nil {
             log.Err(err).Stack().Msg("error unmarshalling config file")
         }
+        config_file.Close()
     }
 
     args := os.Args
@@ -81,9 +82,22 @@ func main() {
             switch args[1] {
                 case "tidy", "t":
                     u.Tidy(c_config.notes_folder, c_config.file_ext)
+                case "-h" , "h" , "-help", "help":
+                    fmt.Println("")
+                    fmt.Println("usage:")
+                    fmt.Println("sn 12 --> \t\topens note for task 12")
+                    fmt.Println("sn add 12 --> \t\tif note for task 12 does not exist adds one, otherwise opens it")
+                    fmt.Println("sn delete 12 --> \tdeletes note for task 12")
+                    fmt.Println("")
                 default:
                     taskno := args[1]
-                    u.Open_tasknote(taskno, c_config.notes_folder, c_config.file_ext)
+                    notere := regexp.MustCompile(`\d+`)
+                    if notere.MatchString(taskno) {
+                        u.Open_tasknote(taskno, c_config.notes_folder, c_config.file_ext)
+                    } else {
+                        fmt.Println("\n\033[7;31munsupported usage\033[0;0m, for help use : \"sn -h or sn help\"")
+                        fmt.Println("")
+                    }
             }
 
         case 3: // eg. sn 122 add
@@ -91,10 +105,13 @@ func main() {
             switch method {
                 case "add" , "ADD" , "a" , "A":
                     u.Add_tasknote(taskno, c_config.notes_folder, c_config.file_ext)
+                default:
+                    fmt.Println("\n\033[7;31munsupported usage\033[0;0m, for help use : \"sn -h or sn help\"")
+                    fmt.Println("")
             }
         default:
             err := errors.New("No support for other than 2 or 3 arguments ")
-            fmt.Println("\nusage:\n\topen note for task 12: \n\t\tmain 12\n\tadd note to task 12: \n\t\tmain add 12")
+            fmt.Println("\n\033[7;31munsupported usage\033[0;0m, for help use : \"sn -h or sn help\"")
             fmt.Println()
             log.Error().Stack().Err(err).Msg("No support for other than 2 or 3 arguments ")
             

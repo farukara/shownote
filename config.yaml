@@ -1,5 +1,5 @@
 file_ext: ".md" #dont forget initial dot 
-editor: "" #empty for default system $EDITOR
+editor: "" #empty for default system environment variable $EDITOR
 
 notes_folder: ".tasknotes"  #relative to user home folder
 # notes_folder: "Documents/golang/tasknotes/"

@@ -73,9 +73,17 @@ func Tidy(notes_folder, file_ext string) {
                         break
                     }
                     id, err := filecmd.cmd.Output()
-                    if err == nil && len(id) < 2 {
-                        fmt.Println(path.Join(notes_folder, filecmd.filename))
+                    if err != nil {
+                        fmt.Println("\033[7;31merror occured during following command:")
+                        fmt.Println("filecmd")
+                        continue
                     }
+                    if len(id) < 2 { // FIX:
+                        fmt.Println("\033[7;31merror: task does not exist:")
+                        fmt.Println("filecmd")
+                        continue
+                    }
+                    fmt.Println(path.Join(notes_folder, filecmd.filename))
                 }
             }(ch)
         }

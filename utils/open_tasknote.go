@@ -16,8 +16,11 @@ import (
 func Open_tasknote (taskno, notes_folder, file_ext string) {
     task_uuid, err := Get_task_uuid(taskno)
     if err != nil {
-        err := errors.New("failure to get uuid")
         log.Err(err).Stack().Str("task no", taskno).Msg( "error getting task UUID from Task Warrior" )
+        fmt.Println()
+        fmt.Println("\033[7;31mtask note does not exist or an error occured\033[0;0m, for help use : \"sn -h or sn help\"")
+        fmt.Println()
+        return
     }
     log.Info().Str("task uuid:", string(task_uuid))
 
@@ -44,7 +47,6 @@ func Open_tasknote (taskno, notes_folder, file_ext string) {
             answer = s.Text()
         }
         switch answer {
-            //FIX:
             case "1": 
                 Add_tasknote(taskno, notes_folder, file_ext)
             case "2": 

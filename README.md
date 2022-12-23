@@ -32,13 +32,10 @@ on the console.
 
 ## Usage
     sn 12
-opens note for task number 12
+opens note for task number 12 if not does not exist gives an option to add one.
 
     sn add 16 
 adds a note for the task 16. if file exist with same uuid, it just opens it.
-
-    sn 13
-if you try to open a non-existent note. it will give options for adding one or cancelling.
 
     sn tidy
 prints out the notes that don't have a corresponding task. This happens when a task is deleted but associatted task note is not. tidy command only looks at the files with proper uuid names. so if there are other files in the same folder you have to clean them up manually. 
@@ -53,7 +50,7 @@ if there are no orphan notes "tidy" returns nothing.
 
 ## Tips
 ## Configuration
-when you make from the source, the default config file will be copied to `$HOME/.config/shownote` folder. It's important that you don't change the left side of each option.
+when you make from the source, the default config file will be copied to `$HOME/.config/shownote` folder. It's important that you don't change the key (left side) of each option.
 
 **shownote** will look for a config.yaml file at two places: `$HOME/.config/shownote/config.yaml` or `$HOME/.shownote/config.yaml`. If there is no config file, then it uses the following defaults: 
 
@@ -62,7 +59,7 @@ when you make from the source, the default config file will be copied to `$HOME/
     notes_folder: ".tasknotes"  #relative to user home folder
     open_tasknote_after_creation: 1
 
-You can find a sample config file in config.yaml file above. All options have to be present in the file for it to work. Again, basically, only change the right side of the colon in the config file.
+You can find a sample config file in config.yaml file above. All options have to be present in the file for it to work. Again, basically, only change the right side of the colon in the config file, if you need to modify.
 
 ## Advantages
 
@@ -89,3 +86,4 @@ You can find a sample config file in config.yaml file above. All options have to
 - tidy should list file names in blue and content below it
 - handle calls to tasks that don't have a due date. 
 - add image from gh
+- each command should be able accomadate test uuid instead of taskno as well - len of id can be used to distinguish
