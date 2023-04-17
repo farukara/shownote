@@ -19,6 +19,7 @@ type filecmd struct {
 // find orphan notes that does not have a corresponding task
 // in taskwarrior
 func Tidy(notes_folder, file_ext string) {
+    someFilesFound := false
     home,err := os.UserHomeDir()
     if err != nil {
         log.Err(err).Stack().Msg("could not get home dir")
@@ -78,16 +79,26 @@ func Tidy(notes_folder, file_ext string) {
                         fmt.Println("filecmd")
                         continue
                     }
-                    if len(id) < 2 { // FIX:
-                        fmt.Println("\033[7;31merror: task does not exist:")
-                        fmt.Println("filecmd")
+                    if len(id) < 2 { // only 10 exist in byte slice, which is line feed
+                        fmt.Println("\033[7;34mFollowing files don't have an assosiated task.")
+                        fmt.Println("They are called Orphan Notes")
+                        fmt.Println("You can delete them with the following command:")
+                        fmt.Println("\033[7;0m")
+                        fmt.Println("rm  <filename>")
+                        fmt.Println()
+                        fmt.Println("\033[7;34mOrphan files:\033[7;0m")
+                        fmt.Println(path.Join(notes_folder, filecmd.filename))
+                        someFilesFound = true
                         continue
                     }
-                    fmt.Println(path.Join(notes_folder, filecmd.filename))
+                    // fmt.Println(path.Join(notes_folder, filecmd.filename))
                 }
             }(ch)
         }
         wg.Wait()
     }(ch)
     wgout.Wait()
+    if !someFilesFound {
+        fmt.Println("No orphan notes have been found.")
+    }
 }

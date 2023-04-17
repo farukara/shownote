@@ -88,6 +88,7 @@ func main() {
                     fmt.Println("sn 12 --> \t\topens note for task 12")
                     fmt.Println("sn add 12 --> \t\tif note for task 12 does not exist adds one, otherwise opens it")
                     fmt.Println("sn delete 12 --> \tdeletes note for task 12")
+                    fmt.Println("sn tidy --> \tfinds the notes in the notes folder that are not related to a task anymore and delete them. That happens when you delete a task but not the note associated with it.")
                     fmt.Println("")
                 default:
                     taskno := args[1]

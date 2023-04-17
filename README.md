@@ -75,10 +75,10 @@ You can find a sample config file in config.yaml file above. All options have to
 
 ## TODOs
 
-- add delete
+- add prune: on top of tidy it deletes the orphan notes
 - add a testing lib
 - main 12 is opening the notes file even if it's not created before. gotta check either there is "Notes" annotation or if the file exist
-- for recursive tasks notes annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
+- for recursive tasks, annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
 - set config.yaml with if else clauses to use different folders for dev and prod
 - add options for log levels with nolog as well.
 - adding new note when it does not exist annotates the main task with "notes:Notes", think about putting option for that into config
