@@ -26,6 +26,8 @@ type config struct {
 
 func init() {
     zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+    zerolog.SetGlobalLevel(zerolog.Disabled)
+    log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 }
 
 func main() {
