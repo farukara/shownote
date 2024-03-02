@@ -1,16 +1,16 @@
 # Show Note for Taskwarrior
 
 ## Overview
-"shownote" (or sn for short) adds note-taking functionality to Taskwarrior in macOS and Linux. It's not tested nor used on Windows. It requires on Taskwarrior to be installed first. Taskwarrior is a open source task management tool for terminals. You can download it [here](https://taskwarrior.org/).
+"shownote" (or sn for short) adds note-taking functionality to Taskwarrior in macOS and Linux. It's not tested nor used on Windows. It requires Taskwarrior to be installed first. Taskwarrior is an open source cli task manager for terminals. You can download it [here](https://taskwarrior.org/).
 
-Taskwarrior provides an annotation feature where you can write small notes. However it's not suitable for heavy note-taking. Enter "shownote". With show note you can add view delete a notes pertaining to a task on a totally different text file. Each task will have its own note file. 
+Taskwarrior provides an annotation feature where you can write small notes. However it's not suitable for heavy note-taking. Enter "shownote". With show note you can add view delete a notes file and attach it to a task. Each task will have its own note file.
 
 ## Installation
 ### Build from source you need [Go](https://go.dev/).
 - download this repo by:
 
     $ git clone https://github.com/farukara/shownote
-    cd show note
+    cd shownote
     make
 
 make runs go build and copies the executable binary "sn" to usr/local/bin
@@ -20,19 +20,25 @@ make runs go build and copies the executable binary "sn" to usr/local/bin
 - save file somewhere in the $PATH
 - you can see folders that are on the $PATH by:
 
-    printenv $PATH
+    echo $PATH
 
-on the console.
+on the console. some regular path folders are:
+usr/local/bin
+usr/bin
+/bin
+
+sane sn file in any of this folders. Then you can use it.
 
 ## Commands
 
-- add or a
-- delete or del or d (not implemented yet)
+- ktask number
+- task number + add or a
+- task number + delete or del or d (not implemented yet, instead use tidy)
 - tidy or t
 
 ## Usage
     sn 12
-opens note for task number 12 if not does not exist gives an option to add one.
+opens note file for task number 12. if note file for task 12 does not exist asks if you want to create one. If you choose to create then a new notes file will be created and the task will annotated with "Notes". When you list tasks, this annotation visiually indicates that task has a notes file.
 
     sn add 16 
 adds a note for the task 16. if file exist with same uuid, it just opens it.
@@ -56,7 +62,7 @@ when you make from the source, the default config file will be copied to `$HOME/
 
     file_ext: ".md" #dont forget initial dot 
     editor: "vim" #empty for default system $EDITOR
-    notes_folder: ".tasknotes"  #relative to user home folder
+    notes_folder: "$HOME/.tasknotes" 
     open_tasknote_after_creation: 1
 
 You can find a sample config file in config.yaml file above. All options have to be present in the file for it to work. Again, basically, only change the right side of the colon in the config file, if you need to modify.
@@ -64,12 +70,12 @@ You can find a sample config file in config.yaml file above. All options have to
 ## Advantages
 
 *Data is yours*. You can use it however you want. If you want you can build a cloud solution, which will enable syncing.
-*It's decoupled from Taskwarrior*. Notes are kept another folder and do not interfere with Taskwarrior at all.
+*It's decoupled from Taskwarrior*. Notes are kept in another folder and do not interfere with Taskwarrior at all, except for annotating the task when adding notes.
 *Extensible*. You can extend the functionality to suit your needs, such as spaced repetition.
 
 ## Improvements Needed
 
-- Only testted and used in macOS. It should run alright in Linux. For other platforms it's not been used nor tested.
+- Only testted and used in macOS. It should run alright in Linux. For other platforms it's not been used or tested.
 
 ## Concepts
 
@@ -77,13 +83,7 @@ You can find a sample config file in config.yaml file above. All options have to
 
 - add prune: on top of tidy it deletes the orphan notes
 - add a testing lib
-- main 12 is opening the notes file even if it's not created before. gotta check either there is "Notes" annotation or if the file exist
 - for recursive tasks, annotion is inherited from the parent, but it does not point to an existing note. Make it to ask if user want to open parent note instead.
 - set config.yaml with if else clauses to use different folders for dev and prod
 - add options for log levels with nolog as well.
-- adding new note when it does not exist annotates the main task with "notes:Notes", think about putting option for that into config
-- loggin should only log file name and immediate parent
-- tidy should list file names in blue and content below it
-- handle calls to tasks that don't have a due date. 
-- add image from gh
-- each command should be able accomadate test uuid instead of taskno as well - len of id can be used to distinguish
+- currently notes are being deleted manually by user. If delete funcion will be created annotationn should be deleted as well.

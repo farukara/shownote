@@ -49,6 +49,7 @@ func Open_tasknote (taskno, notes_folder, file_ext string) {
         switch answer {
             case "1": 
                 Add_tasknote(taskno, notes_folder, file_ext)
+                checkAndAnnotateNote(taskno)
             case "2": 
             fmt.Println("Cancelled!")
                 os.Exit(0)
